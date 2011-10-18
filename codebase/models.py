@@ -1,9 +1,14 @@
+from xml.etree import ElementTree
+
 
 class CodebaseDocument(object):
 
     def __init__(self, tree, parent):
         self.parent = parent
         self.tree = tree
+
+    def to_xml(self):
+        return ElementTree.tostring(self.tree)
 
 
 class Field(object):
