@@ -2,7 +2,6 @@ import base64
 import requests
 from xml.etree import ElementTree
 from urlobject import URLObject
-from .utils import etree_to_dict
 from .models import Project
 
 
@@ -34,9 +33,9 @@ class Codebase(object):
         return ElementTree.fromstring(response.content)
 
     def get_all_projects(self):
-        projects = self.make_request(self.url / 'projects')
-        return [Project(etree_to_dict(project), self) for project in projects]
+        tree = self.make_request(self.url / 'projects')
+        return [Project(element, self) for element in tree]
 
     def get_project(self, permalink):
-        project = self.make_request(self.url / permalink)
-        return Project(etree_to_dict(project), self)
+        tree = self.make_request(self.url / permalink)
+        return Project(tree, self)

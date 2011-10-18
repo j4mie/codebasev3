@@ -1,11 +1,9 @@
-from .utils import etree_to_dict
-
 
 class CodebaseDocument(object):
 
-    def __init__(self, data, parent):
+    def __init__(self, tree, parent):
         self.parent = parent
-        self.data = data
+        self.tree = tree
 
 
 class Field(object):
@@ -15,10 +13,10 @@ class Field(object):
         self.source = source
 
     def __get__(self, instance, owner):
-        return instance.data[self.source]
+        return instance.tree.find(self.source).text
 
     def __set__(self, instance, value):
-        instance.data[self.source] = value
+        instance.tree.find(self.source).text = value
 
 
 class Project(CodebaseDocument):
@@ -39,12 +37,12 @@ class Project(CodebaseDocument):
         return self.search_tickets({})
 
     def search_tickets(self, query):
-        tickets = self.parent.make_request(self.url / 'tickets' & query)
-        return [Ticket(etree_to_dict(ticket), self) for ticket in tickets]
+        tree = self.parent.make_request(self.url / 'tickets' & query)
+        return [Ticket(element, self) for element in tree]
 
     def get_all_repositories(self):
-        repos = self.parent.make_request(self.url / 'repositories')
-        return [Repository(etree_to_dict(repo), self) for repo in repos]
+        tree = self.parent.make_request(self.url / 'repositories')
+        return [Repository(element, self) for element in tree]
 
 
 class Ticket(CodebaseDocument):
