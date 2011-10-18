@@ -1,24 +1,35 @@
-from dictshield import document, fields
 from .utils import etree_to_dict
 
 
-class CodebaseDocument(document.Document):
+class CodebaseDocument(object):
 
     def __init__(self, data, parent):
         self.parent = parent
-        kwargs = {key.replace('-', '_'): value for key, value in data.items()}
-        super(CodebaseDocument, self).__init__(**kwargs)
+        self.data = data
+
+
+class Field(object):
+    """Field descriptor"""
+
+    def __init__(self, source):
+        self.source = source
+
+    def __get__(self, instance, owner):
+        return instance.data[self.source]
+
+    def __set__(self, instance, value):
+        instance.data[self.source] = value
 
 
 class Project(CodebaseDocument):
 
-    status = fields.StringField()
-    permalink = fields.StringField()
-    group_id = fields.IntField()
-    overview = fields.StringField()
-    start_page = fields.StringField()
-    icon = fields.IntField()
-    name = fields.StringField()
+    status = Field(source='status')
+    permalink = Field(source='permalink')
+    group_id = Field(source='group-id')
+    overview = Field(source='overview')
+    start_page = Field(source='start-page')
+    icon = Field(source='icon')
+    name = Field(source='name')
 
     @property
     def url(self):
@@ -38,26 +49,26 @@ class Project(CodebaseDocument):
 
 class Ticket(CodebaseDocument):
 
-    ticket_id = fields.IntField()
-    summary = fields.StringField()
-    ticket_type = fields.StringField()
-    reporter_id = fields.IntField()
-    reporter = fields.StringField()
-    assignee_id = fields.IntField()
-    assignee = fields.StringField()
-    category_id = fields.IntField()
-    priority_id = fields.IntField()
-    status_id = fields.IntField()
-    milestone_id = fields.IntField()
+    ticket_id = Field(source='ticket-id')
+    summary = Field(source='summary')
+    ticket_type = Field(source='ticket-type')
+    reporter_id = Field(source='reporter-id')
+    reporter = Field(source='reporter')
+    assignee_id = Field(source='assignee-id')
+    assignee = Field(source='assignee')
+    category_id = Field(source='category-id')
+    priority_id = Field(source='priority-id')
+    status_id = Field(source='status-id')
+    milestone_id = Field(source='milestone-id')
 
 
 class Repository(CodebaseDocument):
 
-    name = fields.StringField()
-    permalink = fields.StringField()
-    disk_usage = fields.IntField()
-    last_commit_ref = fields.StringField()
-    clone_url = fields.StringField()
+    name = Field(source='name')
+    permalink = Field(source='permalink')
+    disk_usage = Field(source='disk-usage')
+    last_commit_ref = Field(source='last-commit-ref')
+    clone_url = Field(source='clone-url')
 
     @property
     def url(self):
