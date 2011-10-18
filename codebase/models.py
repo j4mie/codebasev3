@@ -1,7 +1,7 @@
 from xml.etree import ElementTree
 
 
-class CodebaseDocument(object):
+class Model(object):
 
     def __init__(self, tree, parent):
         self.parent = parent
@@ -24,7 +24,7 @@ class Field(object):
         instance.tree.find(self.source).text = value
 
 
-class Project(CodebaseDocument):
+class Project(Model):
 
     status = Field(source='status')
     permalink = Field(source='permalink')
@@ -50,7 +50,7 @@ class Project(CodebaseDocument):
         return [Repository(element, self) for element in tree]
 
 
-class Ticket(CodebaseDocument):
+class Ticket(Model):
 
     ticket_id = Field(source='ticket-id')
     summary = Field(source='summary')
@@ -65,7 +65,7 @@ class Ticket(CodebaseDocument):
     milestone_id = Field(source='milestone-id')
 
 
-class Repository(CodebaseDocument):
+class Repository(Model):
 
     name = Field(source='name')
     permalink = Field(source='permalink')
