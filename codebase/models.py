@@ -26,6 +26,21 @@ class Model(object):
             data = self.to_xml_string()
             response = self.api.make_request(url, method='POST', data=data)
 
+    def get_many(self, cls, url=None, query=None):
+        if url is None:
+            url = self.url / cls.root_url
+        if query is None:
+            query = {}
+        url = url & query
+        tree = self.api.make_request(url)
+        return [cls(element, api=self.api, parent=self) for element in tree]
+
+    def get_one(self, cls, url=None):
+        if url is None:
+            url = self.url / cls.root_url
+        element = self.api.make_request(url)
+        return cls(element, api=self.api, parent=self)
+
 
 class Field(object):
     """Field descriptor"""
@@ -60,32 +75,28 @@ class Project(Model):
         return self.api.url / self.permalink
 
     def get_all_tickets(self):
-        return self.search_tickets({})
+        return self.get_many(Ticket)
 
     def search_tickets(self, query):
-        tree = self.api.make_request(self.url / 'tickets' & query)
-        return [Ticket(element, api=self.api, parent=self) for element in tree]
+        return self.get_many(Ticket, query=query)
 
     def create_ticket(self):
         return Ticket.create(api=self.api, parent=self)
 
     def get_all_repositories(self):
-        tree = self.api.make_request(self.url / 'repositories')
-        return [Repository(element, api=self.api, parent=self) for element in tree]
+        return self.get_many(Repository)
 
     def get_repository(self, permalink):
-        tree = self.api.make_request(self.url / permalink)
-        return Repository(tree, api=self.api, parent=self)
+        url = self.url / permalink
+        return self.get_one(Repository, url=url)
 
     def get_all_users(self):
-        tree = self.api.make_request(self.url / 'assignments')
-        return [User(element, api=self.api, parent=self) for element in tree]
+        return self.get_many(User)
 
 
 class Ticket(Model):
 
     tag_name = 'ticket'
-
     root_url = 'tickets'
 
     ticket_id = Field(source='ticket-id')
@@ -104,6 +115,7 @@ class Ticket(Model):
 class Repository(Model):
 
     tag_name = 'repository'
+    root_url = 'repositories'
 
     name = Field(source='name')
     permalink = Field(source='permalink')
@@ -119,6 +131,7 @@ class Repository(Model):
 class User(Model):
 
     tag_name = 'user'
+    root_url = 'assignments'
 
     company = Field(source='company')
     first_name = Field(source='first-name')
