@@ -1,4 +1,3 @@
-import base64
 import requests
 from xml.etree import ElementTree
 from urlobject import URLObject
@@ -17,19 +16,11 @@ class Codebase(object):
     def url(self):
         return URLObject.parse(self.BASE_URL)
 
-    def get_auth_header(self):
-        auth = (self.username, self.key)
-        return base64.encodestring('%s:%s' % auth).replace('\n', '')
-
-    def get_headers(self):
-        return {
-            'Accept': 'application/xml',
-            'Content-type': 'application/xml',
-            'Authorization': self.get_auth_header(),
-        }
-
     def make_request(self, url):
-        response = requests.get(url, headers=self.get_headers())
+        auth = (self.username, self.key)
+        media_type = 'application/xml'
+        headers = {'Accept': media_type, 'Content-type': media_type}
+        response = requests.get(url, auth=auth, headers=headers)
         return ElementTree.fromstring(response.content)
 
     def get_all_projects(self):
