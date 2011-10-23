@@ -27,6 +27,8 @@ class Field(object):
 
 class Project(Model):
 
+    tag_name = 'project'
+
     status = Field(source='status')
     permalink = Field(source='permalink')
     group_id = Field(source='group-id')
@@ -53,6 +55,8 @@ class Project(Model):
 
 class Ticket(Model):
 
+    tag_name = 'ticket'
+
     ticket_id = Field(source='ticket-id')
     summary = Field(source='summary')
     ticket_type = Field(source='ticket-type')
@@ -67,6 +71,8 @@ class Ticket(Model):
 
 
 class Repository(Model):
+
+    tag_name = 'repository'
 
     name = Field(source='name')
     permalink = Field(source='permalink')
