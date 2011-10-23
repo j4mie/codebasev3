@@ -3,7 +3,8 @@ from xml.etree import ElementTree
 
 class Model(object):
 
-    def __init__(self, tree, parent):
+    def __init__(self, tree, api, parent=None):
+        self.api = api
         self.parent = parent
         self.tree = tree
 
@@ -36,18 +37,18 @@ class Project(Model):
 
     @property
     def url(self):
-        return self.parent.url / self.permalink
+        return self.api.url / self.permalink
 
     def get_all_tickets(self):
         return self.search_tickets({})
 
     def search_tickets(self, query):
-        tree = self.parent.make_request(self.url / 'tickets' & query)
-        return [Ticket(element, self) for element in tree]
+        tree = self.api.make_request(self.url / 'tickets' & query)
+        return [Ticket(element, api=self.api, parent=self) for element in tree]
 
     def get_all_repositories(self):
         tree = self.parent.make_request(self.url / 'repositories')
-        return [Repository(element, self) for element in tree]
+        return [Repository(element, api=self.api, parent=self) for element in tree]
 
 
 class Ticket(Model):

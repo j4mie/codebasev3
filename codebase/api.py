@@ -34,8 +34,8 @@ class Codebase(object):
 
     def get_all_projects(self):
         tree = self.make_request(self.url / 'projects')
-        return [Project(element, self) for element in tree]
+        return [Project(element, api=self) for element in tree]
 
     def get_project(self, permalink):
         tree = self.make_request(self.url / permalink)
-        return Project(tree, self)
+        return Project(tree, api=self)
