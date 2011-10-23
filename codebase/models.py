@@ -3,13 +3,19 @@ from xml.etree import ElementTree
 
 class Model(object):
 
-    def __init__(self, tree, api, parent=None):
+    def __init__(self, tree, api, parent=None, created=False):
         self.api = api
         self.parent = parent
         self.tree = tree
+        self.created = created
 
     def to_xml(self):
         return ElementTree.tostring(self.tree)
+
+    @classmethod
+    def create(cls, api, parent=None, created=True):
+        tree = ElementTree.Element(cls.tag_name)
+        return cls(tree, api=api, parent=parent, created=True)
 
 
 class Field(object):
@@ -22,7 +28,10 @@ class Field(object):
         return instance.tree.find(self.source).text
 
     def __set__(self, instance, value):
-        instance.tree.find(self.source).text = value
+        element = instance.tree.find(self.source)
+        if element is None:
+            element = ElementTree.SubElement(instance.tree, self.source)
+        element.text = value
 
 
 class Project(Model):
@@ -47,6 +56,9 @@ class Project(Model):
     def search_tickets(self, query):
         tree = self.api.make_request(self.url / 'tickets' & query)
         return [Ticket(element, api=self.api, parent=self) for element in tree]
+
+    def create_ticket(self):
+        return Ticket.create(api=self.api, parent=self)
 
     def get_all_repositories(self):
         tree = self.parent.make_request(self.url / 'repositories')
