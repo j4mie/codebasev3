@@ -12,10 +12,9 @@ class Model(object):
     def to_xml(self):
         return ElementTree.tostring(self.tree)
 
-    @classmethod
-    def create(cls, api, parent=None, created=True):
+    def create(self, cls):
         tree = ElementTree.Element(cls.tag_name)
-        return cls(tree, api=api, parent=parent, created=True)
+        return cls(tree, api=self.api, parent=self, created=True)
 
     def to_xml_string(self):
         return ElementTree.tostring(self.tree)
@@ -81,7 +80,7 @@ class Project(Model):
         return self.get_many(Ticket, query=query)
 
     def create_ticket(self):
-        return Ticket.create(api=self.api, parent=self)
+        return self.create(Ticket)
 
     def get_all_repositories(self):
         return self.get_many(Repository)
