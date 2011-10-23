@@ -16,11 +16,11 @@ class Codebase(object):
     def url(self):
         return URLObject.parse(self.BASE_URL)
 
-    def make_request(self, url):
+    def make_request(self, url, method='GET', data=None):
         auth = (self.username, self.key)
         media_type = 'application/xml'
         headers = {'Accept': media_type, 'Content-type': media_type}
-        response = requests.get(url, auth=auth, headers=headers)
+        response = requests.request(method, url, auth=auth, headers=headers, data=data)
         return ElementTree.fromstring(response.content)
 
     def get_all_projects(self):

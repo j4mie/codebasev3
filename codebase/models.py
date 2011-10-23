@@ -17,6 +17,15 @@ class Model(object):
         tree = ElementTree.Element(cls.tag_name)
         return cls(tree, api=api, parent=parent, created=True)
 
+    def to_xml_string(self):
+        return ElementTree.tostring(self.tree)
+
+    def save(self):
+        if self.created:
+            url = self.parent.url / self.root_url
+            data = self.to_xml_string()
+            response = self.api.make_request(url, method='POST', data=data)
+
 
 class Field(object):
     """Field descriptor"""
@@ -68,6 +77,8 @@ class Project(Model):
 class Ticket(Model):
 
     tag_name = 'ticket'
+
+    root_url = 'tickets'
 
     ticket_id = Field(source='ticket-id')
     summary = Field(source='summary')
