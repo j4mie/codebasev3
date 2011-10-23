@@ -73,6 +73,10 @@ class Project(Model):
         tree = self.api.make_request(self.url / 'repositories')
         return [Repository(element, api=self.api, parent=self) for element in tree]
 
+    def get_repository(self, permalink):
+        tree = self.api.make_request(self.url / permalink)
+        return Repository(tree, api=self.api, parent=self)
+
     def get_all_users(self):
         tree = self.api.make_request(self.url / 'assignments')
         return [User(element, api=self.api, parent=self) for element in tree]
