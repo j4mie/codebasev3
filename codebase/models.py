@@ -73,6 +73,10 @@ class Project(Model):
         tree = self.parent.make_request(self.url / 'repositories')
         return [Repository(element, api=self.api, parent=self) for element in tree]
 
+    def get_all_users(self):
+        tree = self.api.make_request(self.url / 'assignments')
+        return [User(element, api=self.api, parent=self) for element in tree]
+
 
 class Ticket(Model):
 
@@ -106,3 +110,15 @@ class Repository(Model):
     @property
     def url(self):
         return self.parent.url / self.permalink
+
+
+class User(Model):
+
+    tag_name = 'user'
+
+    company = Field(source='company')
+    first_name = Field(source='first-name')
+    id = Field(source='id')
+    last_name = Field(source='last-name')
+    username = Field(source='username')
+    email_address = Field(source='email-address')
