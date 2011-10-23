@@ -21,13 +21,13 @@ class Model(object):
 
     def save(self):
         if self.created:
-            url = self.parent.url / self.root_url
+            url = self.parent.url / self.root_path
             data = self.to_xml_string()
             response = self.api.make_request(url, method='POST', data=data)
 
     def get_many(self, cls, url=None, query=None):
         if url is None:
-            url = self.url / cls.root_url
+            url = self.url / cls.root_path
         if query is None:
             query = {}
         url = url & query
@@ -36,7 +36,7 @@ class Model(object):
 
     def get_one(self, cls, url=None):
         if url is None:
-            url = self.url / cls.root_url
+            url = self.url / cls.root_path
         element = self.api.make_request(url)
         return cls(element, api=self.api, parent=self)
 
@@ -96,7 +96,7 @@ class Project(Model):
 class Ticket(Model):
 
     tag_name = 'ticket'
-    root_url = 'tickets'
+    root_path = 'tickets'
 
     ticket_id = Field(source='ticket-id')
     summary = Field(source='summary')
@@ -114,7 +114,7 @@ class Ticket(Model):
 class Repository(Model):
 
     tag_name = 'repository'
-    root_url = 'repositories'
+    root_path = 'repositories'
 
     name = Field(source='name')
     permalink = Field(source='permalink')
@@ -130,7 +130,7 @@ class Repository(Model):
 class User(Model):
 
     tag_name = 'user'
-    root_url = 'assignments'
+    root_path = 'assignments'
 
     company = Field(source='company')
     first_name = Field(source='first-name')
