@@ -70,7 +70,7 @@ class Project(Model):
         return Ticket.create(api=self.api, parent=self)
 
     def get_all_repositories(self):
-        tree = self.parent.make_request(self.url / 'repositories')
+        tree = self.api.make_request(self.url / 'repositories')
         return [Repository(element, api=self.api, parent=self) for element in tree]
 
     def get_all_users(self):
