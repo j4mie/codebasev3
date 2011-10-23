@@ -1,2 +1,2 @@
-requests==0.7.1
+requests==0.7.3
 urlobject==0.5.2
